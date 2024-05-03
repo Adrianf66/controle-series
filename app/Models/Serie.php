@@ -9,5 +9,9 @@ class Serie extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name_serie',
+        'total_episode',
+    ];
 
 }
