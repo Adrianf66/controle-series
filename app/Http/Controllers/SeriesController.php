@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Serie;
+use App\Models\Episode;
+use App\Models\Season;
+use App\Models\Series;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -10,8 +12,9 @@ class SeriesController extends Controller
 {
     public function index(Request $request)
     {
-        $series = Serie::query()->orderBy('name_serie')->get();
-       $mensagemSucesso = session('mensagem.sucesso');
+        $series = Series::all();
+
+       $mensagemSucesso = $request->session()->get('mensagem.sucesso');
 
         return view('series.index', compact('series'))->with('mensagemSucesso', $mensagemSucesso);
     }
@@ -23,34 +26,66 @@ class SeriesController extends Controller
 
     public function store(Request $request)
     {
-        $serie = Serie::create($request->all());
+        $validated = $request->validate([
+           'name_serie' => ['required', 'min:3', 'max:100'],
+            'number_season' => ['required', 'integer', 'min:1'],
+            'number_episodes' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $serie = Series::create([
+            'name_serie' => $validated['name_serie'],
+        ]);
+        $seasons = [];
+
+        for($i = 1; $i <= $validated['number_season']; $i++) {
+            $seasons[] = [
+                'serie_id' => $serie->id,
+                'number_season' => $i,
+            ];
+        }
+        Season::insert($seasons);
+        $episodes = [];
+        foreach($serie->seasons as $season) {
+            for ($j = 1; $j <= $validated['number_episodes']; $j++){
+                $episodes[] = [
+                    'season_id' => $season->id,
+                    'number_episodes' => $j,
+                ];
+            }
+        }
+        Episode::insert($episodes);
 
         return to_route('series.index')->with('mensagem.sucesso', "Series $serie->name_serie, cadastrado com sucesso!");
 
     }
 
-    public function edit(Serie $id)
+    public function edit(Request $request, Series $serie)
     {
-        $serie = $id;
+        $serie->update($request->all());
 
         return view('series.edit', compact('serie'));
     }
-    public function update($id, Request $request)
+    public function update(Series $serie, Request $request)
     {
-        $serie = Serie::find($id);
+        $validated = $request->validate([
+           'name_serie' => ['required', 'min:3', 'max:100'],
+           'number_season' => ['required', 'integer', 'min:1'],
+           'number_episodes' => ['required', 'integer', 'min:1'],
+        ]);
+
         $serie->update([
             'name_serie' => $request->name_serie,
-            'total_episode' => $request->total_episode
+
         ]);
         return to_route('series.index')->with('mensagem.sucesso', 'Anime Atualizado com sucesso!');
     }
 
-    public function destroy($id)
+    public function destroy(Series $serie)
     {
-        $series = Serie::find($id);
-        $series->delete();
 
-        return to_route('series.index')->with('mensagem.sucesso', "Série '{$series->name_serie}' removida com sucesso!");
+        $serie->delete();
+
+        return to_route('series.index')->with('mensagem.sucesso', "Série '{$serie->name_serie}' removida com sucesso!");
     }
 
 }

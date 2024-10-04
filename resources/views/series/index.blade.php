@@ -12,13 +12,19 @@
             <ul class="list-group">
                 @foreach($series as $serie)
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ $serie->name_serie }}- {{ $serie->total_episode }} episódios
-                        <form action="{{ route('series.destroy', $serie->id) }}" method="post">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-danger btn-sm">x</button>
-                            <a title="{{ $serie->id }}" class="btn btn-info btn-sm" href="{{ route('series.edit', $serie->id) }}">Editar</a>
-                        </form>
+                        <a href="{{ route('seasons.index', $serie->id) }}">{{ $serie->name_serie }} - {{ $serie->seasons->count() }} temporadas</a>
+                         <div class="row">
+                            <div class="col-sm-6">
+                                <a title="{{ $serie->id }}" class="btn btn-info btn-sm" href="{{ route('series.edit', $serie->id) }}">Editar</a>
+                            </div>
+                            <div class="col-sm-6">
+                                <form action="{{ route('series.destroy', $serie->id) }}" method="post">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm">x</button>
+                                </form>
+                            </div>
+                        </div>
                     </li>
                 @endforeach
             </ul>

@@ -15,15 +15,14 @@
                <div class="row  mt-3">
                    <div class="col-sm-6">
                        <div class="input-group col-sm-2">
-                           <label for="episodeos" class="input-group-text">Episódios</label>
-                           <input type="number" name="total_episode" id="episodeos" class="form-control" value="{{ $serie->total_episode }}">
+                           <label for="number_season" class="input-group-text">Temporadas</label>
+                           <input type="number" class="form-control" id="number_season" name="number_season" value="{{ $serie->seasons }}">
                        </div>
                    </div>
-
                    <div class="col-sm-6">
                        <div class="input-group col-sm-2">
-                           <label for="temporadas" class="input-group-text">Temporadas</label>
-                           <input type="number" class="form-control" value="{{ $serie->temporadas }}">
+                           <label for="number_episodes" class="input-group-text">Episódios</label>
+                           <input type="number" name="number_episodes" id="number_episodes" class="form-control" value="{{ $serie->total_episode }}">
                        </div>
                    </div>
                </div>
